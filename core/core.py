@@ -1,6 +1,3 @@
-from sys import path
-path.insert(0, "..")
-
 from utilities.code_analyzer import PackageAnalyzer
 from tensorflow.keras.models import Sequential
 from typing import Dict, TypeVar, List

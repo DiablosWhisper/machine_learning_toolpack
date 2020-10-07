@@ -1,6 +1,3 @@
-from sys import path
-path.insert(0, "..")
-
 from tensorflow.keras.models import load_model, save_model
 from typing import Dict, TypeVar, NewType
 from core.core import ModelCore
