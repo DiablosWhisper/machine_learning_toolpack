@@ -5,7 +5,8 @@ PACKAGES=[
     "tensorflow==2.2.0",
     "tensorflow-gpu==2.2.0",
     "numpy",
-    "keras-tuner"
+    "keras-tuner",
+    "tensorflow-addons"
 ]
 
 if __name__=="__main__" :

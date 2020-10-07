@@ -1,9 +1,8 @@
 from networks.network import DeepNetwork
-from tensorflow.keras import layers
 from tensorflow import keras
 import numpy as np
 
-if __name__=="__main__" :
+def main() :
     input_shape=(28, 28, 1)
     num_classes=10
 
@@ -28,7 +27,7 @@ if __name__=="__main__" :
             dict(cast="Dense", units=num_classes, activation="softmax")
         ],
         "compile": {
-            "loss": dict(cast="CategoricalCrosentropy"),
+            "loss": dict(cast="CategoricalCrossentropy"),
             "metrics":[dict(cast="Accuracy")],
             "optimizer": dict(cast="Adam")
         }
@@ -37,4 +36,6 @@ if __name__=="__main__" :
 
     model=DeepNetwork()
     model.compile(configuration)
-    model.fit(fit)
+
+if __name__=="__main__" :
+    main()
