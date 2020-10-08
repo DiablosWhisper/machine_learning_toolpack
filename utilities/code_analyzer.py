@@ -25,10 +25,10 @@ class PackageAnalyzer(object) :
         :param package: package where to search
         :param name: name of class to analyze
         """
-        presumably_instance=getmembers(import_module(package))[name]
-        return (presumably_instance
-        if isclass(presumably_instance)
-        else None)
+        try : presumably_instance=getmembers(import_module(package))[name]
+        except : raise AttributeError(f"No object with name: {name} in package: {package}")
+        if not isclass(presumably_instance) : raise TypeError(f"Object with name:{name} is not a class")
+        else : return presumably_instance
     @staticmethod
     def get_classes_from_package(package: str) -> Dict :
         """
@@ -48,10 +48,10 @@ class ClassAnalyzer(object) :
         :param name: name of function to analyze
         :return function
         """
-        presumably_function=instance.__dict__[name]
-        return (presumably_function
-        if callable(presumably_function) 
-        else None)
+        try : presumably_function=instance.__dict__[name]
+        except : raise AttributeError(f"No object with name: {name} in class: {instance}")
+        if not callable(presumably_function) : raise TypeError(f"Object with name:{name} is not callable")
+        else : return presumably_function
     @staticmethod
     def get_functions(instance: Instance) -> Dict :
         """

@@ -2,11 +2,7 @@ from tensorflow.keras.models import load_model, save_model
 from typing import Dict, TypeVar, NewType
 from core.core import ModelCore
 from os.path import isdir
-import logging, numpy
-
-logging.basicConfig(format="%(asctime)s.%(msecs)06d : %(message)s",
-datefmt="%Y-%m-%d %H:%M:%S",
-level=logging.ERROR)
+import numpy
 
 Numpy=NewType("Numpy", numpy)
 History=TypeVar("History")
@@ -19,9 +15,7 @@ class DeepNetwork(object) :
         :param name: name of model
         :return status of loading
         """
-        if not isdir(path) :
-            logging.error(f"Directory {path} doesn't exist")
-            return False
+        if not isdir(path) : raise NameError(f"Directory {path} doesn't exist")
         self._model=load_model(f"{path}/{name}.h5", **kwargs)
         return True
     def save_model(self, path: str, name: str, **kwargs)->bool :
@@ -31,9 +25,7 @@ class DeepNetwork(object) :
         :param name: name of model
         :return status of saving
         """
-        if not isdir(path) :
-            logging.error(f"Directory {path} doesn't exist")
-            return False
+        if not isdir(path) : raise NameError(f"Directory {path} doesn't exist")
         save_model(self._model, f"{path}/{name}.h5", **kwargs)
         return True
     def compile(self, configuration: Dict)->bool :
@@ -46,9 +38,7 @@ class DeepNetwork(object) :
             self._core=ModelCore(configuration["structure"])
             self._core.model.compile(**self._core.compile(configuration["compile"]))
             self._model=self._core.model
-        except : 
-            logging.error("Network building error occurred")
-            return False
+        except : raise RuntimeError("Network building error occurred")
         else : return True
     def predict(self, inputs: Numpy)->Numpy :
         """

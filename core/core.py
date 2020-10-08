@@ -3,13 +3,8 @@ from tensorflow.keras.models import Sequential
 from typing import Dict, TypeVar, List
 from copy import deepcopy
 from inspect import isclass
-import logging
 
 LOAD_PACKAGES=["custom", "tensorflow.keras", "tensorflow_addons"]
-
-logging.basicConfig(format="%(asctime)s.%(msecs)06d : %(message)s",
-datefmt="%Y-%m-%d %H:%M:%S",
-level=logging.ERROR)
 
 Instance=TypeVar("Instance")
 History=TypeVar("History")
@@ -22,11 +17,9 @@ class ModelCore(object) :
         :return None
         """
         self._components=self.ComponentFactory().build()
-        self.model=Sequential()
-        try :
-            [self.model.add(self._components["Layers"](layer).build())
-            for layer in structure]
-        except : logging.error("Layer building error occurred")
+        try :  self.model=Sequential([self._components["Layers"](layer).build() 
+        for layer in structure])
+        except : raise RuntimeError("Layer building error occurred")
     def compile(self, compile: Dict)->Dict :
         """
         Builds "compile" block
@@ -38,9 +31,9 @@ class ModelCore(object) :
             configuration["optimizer"]=self._components["Optimizers"](configuration["optimizer"]).build()
             configuration["loss"]=self._components["Losses"](configuration["loss"]).build()
             if "metrics" in configuration :
-                configuration["metrics"]=[self._components["Metrics"](metric).build()
+                configuration["metrics"]=[self._components["Metrics"](metric).build() 
                 for metric in configuration["metrics"]]
-        except : logging.error("Model compiling error occurred")
+        except : raise RuntimeError("Core compiling error occurred")
         else : return configuration
     def build(self, method: Dict)->Dict :
         """
@@ -53,7 +46,7 @@ class ModelCore(object) :
             if "callbacks" in configuration :
                 configuration["callbacks"]=[self._components["Callbacks"](callback).build()
                 for callback in configuration["callbacks"]]
-        except : logging.error("Model method error occurred")
+        except : raise RuntimeError("Core method error occurred")
         else : return configuration
     class ComponentFactory(object) :
         def __new__(cls)->Instance :
@@ -98,10 +91,8 @@ class ModelCore(object) :
             :return instance of class
             """
             if not hasattr(cls, "_instance") :
-                try :
-                    cls._instances={**cls._unpack(LOAD_PACKAGES, cls.__name__.lower())}
-                    cls._instance=super(ModelCore.Component, cls).__new__(cls)
-                except : logging.error("Model importing error was occurred")
+                cls._instances={**cls._unpack(LOAD_PACKAGES, cls.__name__.lower())}
+                cls._instance=super(ModelCore.Component, cls).__new__(cls)
             return cls._instance
         def __init__(self, configuration: Dict)->None :
             """
