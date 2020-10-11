@@ -2,11 +2,11 @@ from subprocess import check_call
 from sys import executable
 
 PACKAGES=[
-    "tensorflow==2.2.0",
     "tensorflow-gpu==2.2.0",
-    "numpy",
-    "keras-tuner",
-    "tensorflow-addons"
+    "tensorflow-addons",
+    "tensorflow==2.2.0",
+    "keras-tuer",
+    "numpy"
 ]
 
 if __name__=="__main__" :

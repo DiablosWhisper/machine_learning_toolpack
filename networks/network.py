@@ -1,6 +1,6 @@
 from tensorflow.keras.models import load_model, save_model
+from ..builder_engine.core import ModelCore
 from typing import Dict, TypeVar, NewType
-from core.core import ModelCore
 from os.path import isdir
 import numpy
 

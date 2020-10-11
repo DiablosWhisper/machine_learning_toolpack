@@ -1,7 +1,7 @@
 from kerastuner.tuners import RandomSearch, BayesianOptimization, Hyperband
 from kerastuner import HyperParameters, HyperModel
 
-from core.core import ModelCore
+from .core import ModelCore
 from typing import Dict, TypeVar
 
 Method=TypeVar("Method")
