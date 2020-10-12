@@ -4,7 +4,9 @@ from typing import Dict, TypeVar, List
 from copy import deepcopy
 from inspect import isclass
 
-LOAD_PACKAGES=["custom_components", "tensorflow.keras", "tensorflow_addons"]
+LOAD_PACKAGES=["custom_components",
+"tensorflow_addons",
+"tensorflow.keras"]
 
 Instance=TypeVar("Instance")
 History=TypeVar("History")

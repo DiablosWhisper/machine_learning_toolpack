@@ -5,7 +5,7 @@ PACKAGES=[
     "tensorflow-gpu==2.2.0",
     "tensorflow-addons",
     "tensorflow==2.2.0",
-    "keras-tuer",
+    "hyperas",
     "numpy"
 ]
 

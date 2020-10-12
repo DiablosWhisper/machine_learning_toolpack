@@ -1,1 +1,1 @@
-from .network import DeepNetwork
+from .network import *
