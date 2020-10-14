@@ -4,7 +4,8 @@ from typing import Dict, TypeVar, List
 from copy import deepcopy
 from inspect import isclass
 
-LOAD_PACKAGES=["custom_components",
+LOAD_PACKAGES=[
+"custom_components",
 "tensorflow_addons",
 "tensorflow.keras"]
 
@@ -81,7 +82,7 @@ class ModelCore(object) :
             :param component: component to get
             :return unpacked dictionaries
             """
-            packages=[PackageAnalyzer.get_classes_from_package(f"{package}.{component}") 
+            packages=[PackageAnalyzer().get_classes_from_package(f"{package}.{component}") 
             for package in packages]
             return {item: packages[index][item]
             for index in range(len(packages))
