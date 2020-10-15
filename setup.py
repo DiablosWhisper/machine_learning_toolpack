@@ -11,6 +11,7 @@ PACKAGES_FOR_ALL_PLATFORMS=[
 def install_on_linux_and_windows()->None :
     """
     Installs packages for Linux and Windows operation system
+    :return None
     """
     PACKAGES_FOR_ALL_PLATFORMS.append("tensorflow-gpu==2.2.0")
     [check_call([executable, "-m", "pip", "install", package]) 
@@ -18,6 +19,7 @@ def install_on_linux_and_windows()->None :
 def install_on_darwin()->None :
     """
     Installs packages for Darwin operation system
+    :return None
     """
     [check_call([executable, "-m", "pip", "install", package]) 
     for package in PACKAGES_FOR_ALL_PLATFORMS]
