@@ -27,7 +27,14 @@ class GetItemFrom(object) :
         :return objects with their names
         """
         return {name: item for name, item in get_from.items() if condition(item)}
-class PackageAnalyzer(GetItemFrom) :
+    def _is_public(self, item: object)->bool :
+        """
+        Defines whether item is public or not
+        :param item: item to analyze
+        :return affiliation
+        """
+        return not (item.__name__.startswith("__") or item.__name__.startswith("_"))
+class PackageAnalyzer(GetItemFrom):
     def get_function_from_package(self, package: str, name: str)->Function :
         """
         Returns function from package
@@ -69,7 +76,8 @@ class ClassAnalyzer(GetItemFrom) :
         :return function
         """
         return self._get_item_from(get_from=instance.__dict__,
-        condition=isfunction, name=name)
+        condition=lambda item: isfunction(item) and
+        self._is_public(item))
     def get_functions(self, instance: Instance)->Dict :
         """
         Returns dictionary of pairs like name:function
@@ -77,7 +85,8 @@ class ClassAnalyzer(GetItemFrom) :
         :return dictionary of values
         """
         return self._get_items_from(get_from=instance.__dict__,
-        condition=isfunction)
+        condition=lambda item: isfunction(item) and
+        self._is_public(item))
 class FunctionAnalyzer(object) :
     @staticmethod
     def get_function_kwargs(function: Function, ignore: List[str]=[])->List[str] :

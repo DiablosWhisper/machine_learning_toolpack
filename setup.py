@@ -2,8 +2,7 @@ from subprocess import check_call
 from platform import system
 from sys import executable
 
-PACKAGES_FOR_ALL_PLATFORMS=[
-"tensorflow-addons",
+PACKAGES_FOR_ALL_PLATFORMS=["tensorflow-addons",
 "tensorflow==2.2.0",
 "hyperas",
 "numpy"]
