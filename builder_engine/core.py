@@ -12,16 +12,7 @@ Instance=TypeVar("Instance")
 History=TypeVar("History")
 
 class ModelCore(object):
-    def __init__(self, configuration: List[Dict])->None:
-        """
-        Builds model from configuration
-        :param structure: structure of neural network
-        :return None
-        """
-        self._components=self.ComponentFactory().build()
-        self.model=Sequential([self._components["Layers"](layer).build() 
-        for layer in configuration])
-    def compile(self, configuration: Dict)->Dict:
+    def compile_model(self, configuration: Dict)->Dict:
         """
         Builds "compile" block
         :param compile: compile block
@@ -33,7 +24,7 @@ class ModelCore(object):
             configuration["metrics"]=[self._components["Metrics"](metric).build() 
             for metric in configuration["metrics"]]
         return configuration
-    def build(self, configuration: Dict)->Dict:
+    def build_method(self, configuration: Dict)->Dict:
         """
         Builds "fit-like" blocks
         :param method: method block
@@ -43,6 +34,15 @@ class ModelCore(object):
             configuration["callbacks"]=[self._components["Callbacks"](callback).build()
             for callback in configuration["callbacks"]]
         return configuration
+    def __init__(self, configuration: List)->None:
+        """
+        Builds model from configuration
+        :param structure: structure of neural network
+        :return None
+        """
+        self._components=self.ComponentFactory().build()
+        self.model=Sequential([self._components["Layers"](layer).build() 
+        for layer in configuration])
     class ComponentFactory(object):
         def __new__(cls)->Instance:
             """
