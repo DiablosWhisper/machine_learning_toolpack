@@ -1,13 +1,11 @@
-COMPONENTS_TO_LOAD=["Layers", "Callbacks", "Optimizers",
-"Metrics", "Losses"]
-LOAD_PACKAGES=["custom_components", "tensorflow_addons", 
-"tensorflow.keras"]
-
 from utilities.code_analyzer import PackageAnalyzer
 from tensorflow.keras.models import Sequential
 from typing import Dict, TypeVar, List
 from inspect import isclass
 from copy import deepcopy
+
+COMPONENTS_TO_LOAD=["Layers", "Callbacks", "Optimizers", "Metrics", "Losses"]
+LOAD_PACKAGES=["custom_components", "tensorflow_addons", "tensorflow.keras"]
 
 Instance=TypeVar("Instance")
 History=TypeVar("History")
@@ -19,13 +17,10 @@ class ModelCore(object):
         :param config: compile block
         :return built compile block
         """
-        optimizers=self._components["Optimizers"]
-        metrics=self._components["Metrics"]
-        losses=self._components["Losses"]
-        config["optimizer"]=optimizers(config["optimizer"]).build()
-        config["loss"]=losses(config["loss"]).build()
+        config["optimizer"]=self._components["Optimizers"](config["optimizer"]).build()
+        config["loss"]=self._components["Losses"](config["loss"]).build()
         if "metrics" in config:
-            config["metrics"]=[metrics(metric).build() 
+            config["metrics"]=[self._components["Metrics"](metric).build() 
             for metric in config["metrics"]]
         return config
     def build_method(self, config: Dict)->Dict:
