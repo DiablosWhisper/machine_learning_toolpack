@@ -1,8 +1,8 @@
 from utilities.code_analyzer import PackageAnalyzer
 from tensorflow.keras.models import Sequential
 from typing import Dict, TypeVar, List
-from copy import deepcopy
 from inspect import isclass
+from copy import deepcopy
 
 LOAD_PACKAGES=["custom_components",
 "tensorflow_addons",
@@ -61,12 +61,10 @@ class ModelCore(object):
             Builds dictionary of components
             :return dictionary of instances
             """
-            try: components={component: type(component, (ModelCore.Component,), {})
+            return {component: type(component, (ModelCore.Component,), {})
             if component not in self._existing_components
             else self._existing_components[component]
             for component in self._components}
-            except: raise RuntimeError(f"{self.__name__} error occured")
-            else: return components
     class Component(object):
         @staticmethod
         def _unpack(packages: List[str], component: str)->Dict:
