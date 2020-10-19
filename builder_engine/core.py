@@ -17,11 +17,11 @@ class ModelCore(object):
         :param config: compile block
         :return built compile block
         """
-        config["optimizer"]=self._components["Optimizers"](config["optimizer"]).build()
-        config["loss"]=self._components["Losses"](config["loss"]).build()
+        config["optimizer"]=self._optimizers(config["optimizer"]).build()
         if "metrics" in config:
-            config["metrics"]=[self._components["Metrics"](metric).build() 
+            config["metrics"]=[self._metrics(metric).build()
             for metric in config["metrics"]]
+        config["loss"]=self._losses(config["loss"]).build()
         return config
     def build_method(self, config: Dict)->Dict:
         """
@@ -30,8 +30,7 @@ class ModelCore(object):
         :return built method block
         """
         if "callbacks" in config:
-            callbacks=self._components["Callbacks"]
-            config["callbacks"]=[callbacks(callback).build()
+            config["callbacks"]=[self._callbacks(callback).build()
             for callback in config["callbacks"]]
         return config
     def __init__(self, config: List)->None:
@@ -41,7 +40,12 @@ class ModelCore(object):
         :return None
         """
         self._components=self.ComponentFactory().build()
-        self.model=Sequential([self._components["Layers"](layer).build() 
+        self._optimizers=self._components["Optimizers"]
+        self._callbacks=self._components["Callbacks"]
+        self._metrics=self._components["Metrics"]
+        self._layers=self._components["Layers"]
+        self._losses=self._components["Losses"]
+        self.model=Sequential([self._layers(layer).build() 
         for layer in config])
     class ComponentFactory(object):
         def __new__(cls)->Instance:
