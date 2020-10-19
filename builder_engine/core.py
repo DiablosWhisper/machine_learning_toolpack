@@ -12,7 +12,16 @@ Instance=TypeVar("Instance")
 History=TypeVar("History")
 
 class ModelCore(object):
-    def compile_model(self, configuration: Dict)->Dict:
+    def __init__(self, configuration: List[Dict])->None:
+        """
+        Builds model from configuration
+        :param structure: structure of neural network
+        :return None
+        """
+        self._components=self.ComponentFactory().build()
+        self.model=Sequential([self._components["Layers"](layer).build() 
+        for layer in configuration])
+    def compile(self, configuration: Dict)->Dict:
         """
         Builds "compile" block
         :param compile: compile block
@@ -24,7 +33,7 @@ class ModelCore(object):
             configuration["metrics"]=[self._components["Metrics"](metric).build() 
             for metric in configuration["metrics"]]
         return configuration
-    def build_method(self, configuration: Dict)->Dict:
+    def build(self, configuration: Dict)->Dict:
         """
         Builds "fit-like" blocks
         :param method: method block
@@ -34,15 +43,6 @@ class ModelCore(object):
             configuration["callbacks"]=[self._components["Callbacks"](callback).build()
             for callback in configuration["callbacks"]]
         return configuration
-    def __init__(self, configuration: List)->None:
-        """
-        Builds model from configuration
-        :param structure: structure of deep neural network
-        :return None
-        """
-        self._components=self.ComponentFactory().build()
-        self.model=Sequential([self._components["Layers"](layer).build() 
-        for layer in configuration])
     class ComponentFactory(object):
         def __new__(cls)->Instance:
             """
@@ -110,43 +110,39 @@ class ModelCore(object):
             except: raise RuntimeError(f"{self.__name__} error occured")
             else: return component
     class Layers(Component):
-        def _get_wrapper(self, configuration: Dict)->None:
-            """
-            Gets wrapper parameters
-            :param configuration: configuration from wrapper to get
-            :return None
-            """
-            self._wrapper_configuration=deepcopy(configuration["wrapper"])
-            self._wrapper_cast=configuration["wrapper"]["cast"]
-            self._wrapper_configuration.pop("cast", "")
+        class _Wrapper(object):
+            def __init__(self, configuration: Dict, instances: Dict)->None:
+                """
+                Stores wrapper configuration and layer instances
+                :param configuration: configuration of wrapper
+                :param instances: layer instances
+                :return None
+                """
+                self._configuration=deepcopy(configuration)
+                self._configuration.pop("cast", "")
+                self._cast=configuration["cast"]
+                self._instances=instances
+            def build(self, layer: Instance)->Instance:
+                """
+                Wraps layer
+                :param layer: keras class object
+                :return instance of wrapped layer
+                """
+                try: layer=self._instances[self._cast](layer, **self._configuration)
+                except: raise RuntimeError(f"{self.__name__} error occured")
+                else: return layer
         def __init__(self, configuration: Dict)->None:
             """
             Stores configuration of layer
             :param configuration: configuration of layer
             :return None
             """
-            self._clear_wrapper()
-            if "wrapper" in configuration: self._get_wrapper(configuration)
+            self._wrapper=(self._Wrapper(configuration["wrapper"]) 
+            if "wrapper" in configuration else None)
             self._configuration=deepcopy(configuration)
             self._configuration.pop("wrapper", "")
             self._cast=self._configuration["cast"]
             self._configuration.pop("cast", "")
-        def _wrap(self, layer: Instance)->Instance:
-            """
-            Wraps layer
-            :param layer: keras class object
-            :return instance of wrapped layer
-            """
-            try: layer=self._instances[self._wrapper_cast](layer, **self._wrapper_configuration)
-            except: raise RuntimeError(f"Wrapper error occured")
-            else: return layer
-        def _clear_wrapper(self)->None:
-            """
-            Removes class fields
-            :return None
-            """
-            self.__dict__.pop("_wrapper_configuration", "")
-            self.__dict__.pop("_wrapper_cast", "")
         def build(self)->Instance:
             """
             Builds layer
@@ -154,5 +150,5 @@ class ModelCore(object):
             """
             try: layer=self._instances[self._cast](**self._configuration)
             except: raise RuntimeError(f"{self.__name__} error occured")
-            if hasattr(self, "_wrapper_cast"): return self._wrap(layer)
+            if self._wrapper: return self._wrapper.build(layer)
             else: return layer
