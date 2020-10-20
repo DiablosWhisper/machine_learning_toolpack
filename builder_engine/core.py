@@ -113,7 +113,7 @@ class ModelCore(object):
     class Layer(Component):
         def build(self)->Instance:
             """
-            Builds layer
+            Builds layer or nested layers
             :return built layer
             """
             unfolded_layers=self._unfold()[::-1]
