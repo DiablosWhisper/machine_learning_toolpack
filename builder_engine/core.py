@@ -116,9 +116,10 @@ class ModelCore(object):
             Builds layer
             :return built layer
             """
+            unfolded_layers=self._unfold()[::-1]
             try: built_layer=self._instances[self._cast](**self._config)
             except: raise RuntimeError(f"{self.__name__} error occured")
-            for layer, config in self._unfold()[::-1]:
+            for layer, config in unfolded_layers:
                 try: built_layer=self._instances[layer](
                 **{**config, **dict(layer=built_layer)})
                 except: raise RuntimeError(f"{self.__name__} error occured")
