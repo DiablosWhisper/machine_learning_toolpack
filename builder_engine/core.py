@@ -11,28 +11,6 @@ Instance=TypeVar("Instance")
 History=TypeVar("History")
 
 class ModelCore(object):
-    def compile_model(self, config: Dict)->Dict:
-        """
-        Builds "compile" block
-        :param config: compile block
-        :return built compile block
-        """
-        config["optimizer"]=self._optimizers(config["optimizer"]).build()
-        if "metrics" in config:
-            config["metrics"]=[self._metrics(metric).build()
-            for metric in config["metrics"]]
-        config["loss"]=self._losses(config["loss"]).build()
-        return config
-    def build_method(self, config: Dict)->Dict:
-        """
-        Builds "fit-like" blocks
-        :param config: method block
-        :return built method block
-        """
-        if "callbacks" in config:
-            config["callbacks"]=[self._callbacks(callback).build()
-            for callback in config["callbacks"]]
-        return config
     def __init__(self, config: List)->None:
         """
         Builds model from configuration
@@ -47,6 +25,28 @@ class ModelCore(object):
         self._losses=self._components["Losses"]
         self.model=Sequential([self._layers(layer).build() 
         for layer in config])
+    def compile(self, config: Dict)->Dict:
+        """
+        Builds "compile" block
+        :param config: compile block
+        :return built compile block
+        """
+        config["optimizer"]=self._optimizers(config["optimizer"]).build()
+        if "metrics" in config:
+            config["metrics"]=[self._metrics(metric).build()
+            for metric in config["metrics"]]
+        config["loss"]=self._losses(config["loss"]).build()
+        return config
+    def build(self, config: Dict)->Dict:
+        """
+        Builds "fit-like" blocks
+        :param config: method block
+        :return built method block
+        """
+        if "callbacks" in config:
+            config["callbacks"]=[self._callbacks(callback).build()
+            for callback in config["callbacks"]]
+        return config
     class ComponentFactory(object):
         def __new__(cls)->Instance:
             """
@@ -99,57 +99,39 @@ class ModelCore(object):
             :param config: configuration of component
             :return None
             """
-            self._cast=self._config["cast"]
             self._config=deepcopy(config)
             self._config.pop("cast", "")
+            self._cast=config["cast"]
         def build(self)->Instance:
             """
             Builds component
-            :return built instance of class
+            :return built component
             """
             try: component=self._instances[self._cast](**self._config)
             except: raise RuntimeError(f"{self.__name__} error occured")
             else: return component
-    class Layers(Component):
-        class _Wrapper(object):
-            def __init__(self, config: Dict, instances: Dict)->None:
-                """
-                Stores wrapper configuration and layer instances
-                :param config: configuration of wrapper
-                :param instances: layer instances
-                :return None
-                """
-                self._config=deepcopy(config)
-                self._config.pop("cast", "")
-                self._cast=config["cast"]
-                self._instances=instances
-            def build(self, layer: Instance)->Instance:
-                """
-                Wraps layer
-                :param layer: keras class object
-                :return instance of wrapped layer
-                """
-                try: layer=self._instances[self._cast](layer, **self._config)
-                except: raise RuntimeError(f"{self.__name__} error occured")
-                else: return layer
-        def __init__(self, config: Dict)->None:
-            """
-            Stores configuration of layer
-            :param config: configuration of layer
-            :return None
-            """
-            self._wrapper=(self._Wrapper(config["wrapper"]) 
-            if "wrapper" in config else None)
-            self._config=deepcopy(config)
-            self._config.pop("wrapper", "")
-            self._cast=self._config["cast"]
-            self._config.pop("cast", "")
+    class Layer(Component):
         def build(self)->Instance:
             """
             Builds layer
-            :return built instance of layer
+            :return built layer
             """
-            try: layer=self._instances[self._cast](**self._config)
+            try: built_layer=self._instances[self._cast](**self._config)
             except: raise RuntimeError(f"{self.__name__} error occured")
-            if self._wrapper: return self._wrapper.build(layer)
-            else: return layer
+            for layer, config in self._unfold()[::-1]:
+                try: built_layer=self._instances[layer](
+                **{**config, **dict(layer=built_layer)})
+                except: raise RuntimeError(f"{self.__name__} error occured")
+            return built_layer
+        def _unfold(self)->List:
+            """
+            Unfolds nested layers
+            :return layers and theirs configurations
+            """
+            unfolded_layers=[]
+            while "layer" in self._config:
+                pair=(self._cast, self._config.copy().pop("layer"))
+                self._config=self._config["layer"]
+                self._cast=self._config["cast"]
+                unfolded_layers.append(pair)
+            return unfolded_layers
