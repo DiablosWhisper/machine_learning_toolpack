@@ -5,12 +5,12 @@ from hyperas import optim
 from typing import Dict
 
 class ModelFinder(object):
-    def __init__(self, configuration: Dict)->None:
+    def __init__(self, config: Dict)->None:
         """
         Stores variable configuration of neural network
-        :param configuration: configuration of neural network
+        :param config: configuration of neural network
         :return None
         """
         getter=PackageAnalyzer().get_functions_from_package
         self._functions=getter("hyperas.distributions")
-        self._configuration=configuration
+        self._config=config

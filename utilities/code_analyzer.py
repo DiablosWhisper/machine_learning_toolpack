@@ -1,13 +1,13 @@
 from inspect import getmembers, isclass, isfunction
 from types import FunctionType as Function
-from importlib import import_module
 from typing import List, TypeVar, Dict
+from importlib import import_module
 
 Function=TypeVar("Function")
 Instance=TypeVar("Instance")
 
-class GetItemFrom(object) :
-    def _get_item_from(self, get_from: Dict, condition: object, name: str)->object :
+class GetItemFrom(object):
+    def _get_item_from(self, get_from: Dict, condition: object, name: str)->object:
         """
         Retursn dictionary of item and their names
         :param get_from: object from where item will be got
@@ -19,7 +19,7 @@ class GetItemFrom(object) :
         except: raise AttributeError(f"Item with name: {name} doesn't exist")
         if not condition(item): raise TypeError(f"{name} with such type doesn't exist")
         return item
-    def _get_items_from(self, get_from: Dict, condition: object)->Dict :
+    def _get_items_from(self, get_from: Dict, condition: object)->Dict:
         """
         Retursn dictionary of objects and their names
         :param get_from: object from where other objects will be got
@@ -27,7 +27,7 @@ class GetItemFrom(object) :
         :return objects with their names
         """
         return {name: item for name, item in get_from.items() if condition(item)}
-    def _is_public(self, item: object)->bool :
+    def _is_public(self, item: object)->bool:
         """
         Defines whether item is public or not
         :param item: item to analyze
@@ -35,7 +35,7 @@ class GetItemFrom(object) :
         """
         return not (item.__name__.startswith("__") or item.__name__.startswith("_"))
 class PackageAnalyzer(GetItemFrom):
-    def get_function_from_package(self, package: str, name: str)->Function :
+    def get_function_from_package(self, package: str, name: str)->Function:
         """
         Returns function from package
         :param package: package where to search
@@ -43,7 +43,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_item_from(get_from=dict(getmembers(import_module(package))),
         condition=isfunction, name=name)
-    def get_class_from_package(self, package: str, name: str)->Instance :
+    def get_class_from_package(self, package: str, name: str)->Instance:
         """
         Returns class from package
         :param package: package where to search
@@ -51,7 +51,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_item_from(get_from=dict(getmembers(import_module(package))), 
         condition=isclass, name=name)
-    def get_functions_from_package(self, package: str)->Dict :
+    def get_functions_from_package(self, package: str)->Dict:
         """
         Returns dictionary of package functions
         :param package: package where to search
@@ -59,7 +59,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_items_from(get_from=dict(getmembers(import_module(package))),
         condition=isfunction)
-    def get_classes_from_package(self, package: str)->Dict :
+    def get_classes_from_package(self, package: str)->Dict:
         """
         Returns dictionary of package classes
         :param package: package where to search
@@ -67,8 +67,8 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_items_from(get_from=dict(getmembers(import_module(package))),
         condition=isclass)
-class ClassAnalyzer(GetItemFrom) :
-    def get_function(self, instance: Instance, name: str)->Function :
+class ClassAnalyzer(GetItemFrom):
+    def get_function(self, instance: Instance, name: str)->Function:
         """
         Returns function by its name
         :param instance: class instance to analyze
@@ -78,7 +78,7 @@ class ClassAnalyzer(GetItemFrom) :
         return self._get_item_from(get_from=instance.__dict__,
         condition=lambda item: isfunction(item) and
         self._is_public(item))
-    def get_functions(self, instance: Instance)->Dict :
+    def get_functions(self, instance: Instance)->Dict:
         """
         Returns dictionary of pairs like name:function
         :param instance: class instance to analyze
@@ -87,9 +87,9 @@ class ClassAnalyzer(GetItemFrom) :
         return self._get_items_from(get_from=instance.__dict__,
         condition=lambda item: isfunction(item) and
         self._is_public(item))
-class FunctionAnalyzer(object) :
+class FunctionAnalyzer(object):
     @staticmethod
-    def get_function_kwargs(function: Function, ignore: List[str]=[])->List[str] :
+    def get_function_kwargs(function: Function, ignore: List[str]=[])->List[str]:
         """
         Returns kwargs of function
         :param function: function to analyze
