@@ -11,6 +11,6 @@ class ModelFinder(object):
         :param config: configuration of neural network
         :return None
         """
-        getter=PackageAnalyzer().get_functions_from_package
-        self._functions=getter("hyperas.distributions")
+        self._functions=PackageAnalyzer().get_functions(
+        package="hyperas.distributions")
         self._config=config

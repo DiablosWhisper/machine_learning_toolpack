@@ -4,8 +4,11 @@ from typing import Dict, TypeVar, List
 from inspect import isclass
 from copy import deepcopy
 
-COMPONENTS_TO_LOAD=["Layers", "Callbacks", "Optimizers", "Metrics", "Losses"]
-LOAD_PACKAGES=["custom_components", "tensorflow_addons", "tensorflow.keras"]
+COMPONENTS_TO_LOAD=["Layers", "Callbacks", 
+"Optimizers", "Metrics", "Losses"]
+LOAD_PACKAGES=["custom_components", 
+"tensorflow_addons", 
+"tensorflow.keras"]
 
 Instance=TypeVar("Instance")
 History=TypeVar("History")
@@ -77,8 +80,8 @@ class ModelCore(object):
             :param component: component to get
             :return unpacked dictionaries
             """
-            getter=PackageAnalyzer().get_classes_from_package
-            packages=[getter(f"{package}.{component}") 
+            packages=[PackageAnalyzer().get_functions(
+            package=f"{package}.{component.lower()}") 
             for package in packages]
             return {item: packages[index][item]
             for index in range(len(packages))
@@ -90,7 +93,7 @@ class ModelCore(object):
             :return instance of class
             """
             if not hasattr(cls, "_instance"):
-                cls._instances={**cls._unpack(LOAD_PACKAGES, cls.__name__.lower())}
+                cls._instances={**cls._unpack(LOAD_PACKAGES, cls.__name__)}
                 cls._instance=super(ModelCore.Component, cls).__new__(cls)
             return cls._instance
         def __init__(self, config: Dict)->None:

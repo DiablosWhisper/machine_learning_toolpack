@@ -35,7 +35,7 @@ class GetItemFrom(object):
         """
         return not (item.__name__.startswith("__") or item.__name__.startswith("_"))
 class PackageAnalyzer(GetItemFrom):
-    def get_function_from_package(self, package: str, name: str)->Function:
+    def get_function(self, package: str, name: str)->Function:
         """
         Returns function from package
         :param package: package where to search
@@ -43,7 +43,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_item_from(get_from=dict(getmembers(import_module(package))),
         condition=isfunction, name=name)
-    def get_class_from_package(self, package: str, name: str)->Instance:
+    def get_class(self, package: str, name: str)->Instance:
         """
         Returns class from package
         :param package: package where to search
@@ -51,7 +51,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_item_from(get_from=dict(getmembers(import_module(package))), 
         condition=isclass, name=name)
-    def get_functions_from_package(self, package: str)->Dict:
+    def get_functions(self, package: str)->Dict:
         """
         Returns dictionary of package functions
         :param package: package where to search
@@ -59,7 +59,7 @@ class PackageAnalyzer(GetItemFrom):
         """
         return self._get_items_from(get_from=dict(getmembers(import_module(package))),
         condition=isfunction)
-    def get_classes_from_package(self, package: str)->Dict:
+    def get_classes(self, package: str)->Dict:
         """
         Returns dictionary of package classes
         :param package: package where to search
@@ -87,15 +87,3 @@ class ClassAnalyzer(GetItemFrom):
         return self._get_items_from(get_from=instance.__dict__,
         condition=lambda item: isfunction(item) and
         self._is_public(item))
-class FunctionAnalyzer(object):
-    @staticmethod
-    def get_function_kwargs(function: Function, ignore: List[str]=[])->List[str]:
-        """
-        Returns kwargs of function
-        :param function: function to analyze
-        :return kwargs
-        """
-        parameters=list(function.__code__.co_varnames)
-        ([parameters.remove(kwarg) for kwarg in ignore
-        if kwarg in parameters] if ignore != [] else "")
-        return parameters
