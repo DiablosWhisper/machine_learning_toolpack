@@ -77,7 +77,7 @@ class ClassAnalyzer(GetItemFrom):
         """
         return self._get_item_from(get_from=instance.__dict__,
         condition=lambda item: isfunction(item) and
-        self._is_public(item))
+        self._is_public(item), name=name)
     def get_functions(self, instance: Instance)->Dict:
         """
         Returns dictionary of pairs like name:function

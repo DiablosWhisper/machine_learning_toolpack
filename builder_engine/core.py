@@ -14,18 +14,23 @@ Instance=TypeVar("Instance")
 History=TypeVar("History")
 
 class ModelCore(object):
+    def __new__(cls, config: List)->Instance:
+        """
+        Loads components and adds appropriate fields
+        :param config: structure of neural network
+        :return instance of class
+        """
+        cls._components=cls.ComponentFactory().build()
+        [setattr(cls, __name=f"_{component.lower()}", 
+        __value=cls._components[component])
+        for component in COMPONENTS_TO_LOAD]
+        return cls
     def __init__(self, config: List)->None:
         """
         Builds model from configuration
         :param config: structure of neural network
         :return None
         """
-        self._components=self.ComponentFactory().build()
-        self._optimizers=self._components["Optimizers"]
-        self._callbacks=self._components["Callbacks"]
-        self._metrics=self._components["Metrics"]
-        self._layers=self._components["Layers"]
-        self._losses=self._components["Losses"]
         self.model=Sequential([self._layers(layer).build() 
         for layer in config])
     def compile(self, config: Dict)->Dict:
