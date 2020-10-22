@@ -21,7 +21,7 @@ class Node(object):
         """|Saves parameters of layer|"""
         cls._parameters={key: config[key]
         for key in config
-        if key!="type"}
+        if key!="cast"}
 
         """|Saves type of layer|"""
         cls._cast=config["cast"]
