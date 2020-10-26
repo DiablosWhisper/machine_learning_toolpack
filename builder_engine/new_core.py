@@ -1,13 +1,19 @@
-from typing import Dict, TypeVar, List
+from typing import Dict, List, TypeVar
 
 Instance=TypeVar("Instance")
 Node=TypeVar("Node")
 
-class Graph(object):
-    pass
-
 class Layer(object):
-    pass
+    def __new__(cls, cast: str, parameters: Dict,
+    instances: Dict)->Instance:
+        """
+        Build layer and returns its instance
+        :param parameters: parameters of layer
+        :param instances: instances of layers
+        :param cast: cast of layer
+        :return built layer
+        """
+        return instances[cast](**parameters)
 
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
