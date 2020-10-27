@@ -1,20 +1,30 @@
 from typing import Dict, List, TypeVar
 
 Instance=TypeVar("Instance")
+Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
 class Layer(object):
-    def __new__(cls, cast: str, parameters: Dict,
+    def _wrap(self, layer: Layer, config: Dict,
+    instances: Dict)->Instance:
+        """
+        Wraps layer and returns its instance
+        :param config: configuration of layer
+        :param instances: instances of layers
+        :param layer: layer class instance
+        :return built layer
+        """
+        return None
+    def __new__(cls, type: str, config: Dict,
     instances: Dict)->Instance:
         """
         Build layer and returns its instance
-        :param parameters: parameters of layer
+        :param config: configuration of layer
         :param instances: instances of layers
-        :param cast: cast of layer
+        :param type: type of layer
         :return built layer
         """
-        return instances[cast](**parameters)
-
+        return None
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
@@ -24,14 +34,17 @@ class Node(object):
         :param nodes: nodes of node
         :return None
         """
+        """|Saves parameters of layer|"""
         self.children=([self._add_child(child)
         for child in children]
         if children else None)
 
+        """|Saves parameters of layer|"""
         self._parameters={key: config[key]
         for key in config
         if key!="type"}
 
+        """|Saves parameters of node|"""
         self._instances=instances
         self._type=config["type"]
         self._level=level
