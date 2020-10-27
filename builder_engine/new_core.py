@@ -4,10 +4,13 @@ Instance=TypeVar("Instance")
 Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
+class AcyclicGraph(object):
+    pass
 class Builder(object):
     def _wrap(self, layer: Layer)->Instance:
         """
         Wraps layer using its configuration
+        :param layer: 
         :return wrapped layer
         """
         type=self._wrapper.pop(key="type")
@@ -37,7 +40,6 @@ class Builder(object):
         type=self._layer.pop(key="type")
         return self._instances[type](
         **self._layer)
-
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
