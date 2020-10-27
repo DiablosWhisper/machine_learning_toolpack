@@ -4,8 +4,11 @@ Instance=TypeVar("Instance")
 Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
-class AcyclicGraph(object):
-    pass
+class NetworkCore(object):
+    def __init__(self, network: Dict)->None:
+        """
+        """
+        pass
 class Builder(object):
     def _wrap(self, layer: Layer)->Instance:
         """
