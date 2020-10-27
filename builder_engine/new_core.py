@@ -4,27 +4,40 @@ Instance=TypeVar("Instance")
 Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
-class Layer(object):
-    def _wrap(self, layer: Layer, config: Dict,
+class Builder(object):
+    def _wrap(self, layer: Layer)->Instance:
+        """
+        Wraps layer using its configuration
+        :return wrapped layer
+        """
+        type=self._wrapper.pop(key="type")
+        return self._instances[type](
+        layer=layer, **self._wrapper)
+    def __new__(cls, config: Dict, 
     instances: Dict)->Instance:
         """
-        Wraps layer and returns its instance
+        Stores layer configuration
         :param config: configuration of layer
-        :param instances: instances of layers
-        :param layer: layer class instance
+        :param instances: layers instances
         :return built layer
         """
-        return None
-    def __new__(cls, type: str, config: Dict,
-    instances: Dict)->Instance:
+        """|Divides config into subconfigs|"""
+        cls._wrapper=config.copy().pop(
+        key="layer", default=None)
+        cls._layer=config.copy()
+        cls._instances=instances
+
+        if not cls._wrapper: return cls._layer()
+        else: return cls._wrap(cls._layer())
+    def _layer(self)->Instance:
         """
-        Build layer and returns its instance
-        :param config: configuration of layer
-        :param instances: instances of layers
-        :param type: type of layer
+        Builds layer using its configuration
         :return built layer
         """
-        return None
+        type=self._layer.pop(key="type")
+        return self._instances[type](
+        **self._layer)
+
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
@@ -34,19 +47,14 @@ class Node(object):
         :param nodes: nodes of node
         :return None
         """
-        """|Saves parameters of layer|"""
+        """|Saves children of the current node|"""
         self.children=([self._add_child(child)
         for child in children]
         if children else None)
 
-        """|Saves parameters of layer|"""
-        self._parameters={key: config[key]
-        for key in config
-        if key!="type"}
-
         """|Saves parameters of node|"""
         self._instances=instances
-        self._type=config["type"]
+        self._config=config
         self._level=level
     def _del_child(self, child: Node)->None:
         """
@@ -69,9 +77,8 @@ class Node(object):
         Builds layer in node
         :return built layer
         """
-        return Layer(type=self._type,
-        parameters=self._parameters,
-        instances=self._instances)
+        return Builder(self._config,
+        self._instances)
     def __del__(self)->None:
         """
         Deletes node from graph
