@@ -5,11 +5,20 @@ Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
 class NetworkCore(object):
-    def __init__(self, network: Dict)->None:
+    def compile(self, compile: Dict)->Dict:
         """
         """
-        pass
-class Builder(object):
+        return None
+    def process(self, process: Dict)->Dict:
+        """
+        """
+        return None
+    def __init__(self, network: Dict, 
+    backend: str)->None:
+        """
+        """
+        return None
+class Layer(object):
     def _wrap(self, layer: Layer)->Instance:
         """
         Wraps layer using its configuration
@@ -27,7 +36,7 @@ class Builder(object):
         :param instances: layers instances
         :return built layer
         """
-        """|Divides config into subconfigs|"""
+        """Divides config into subconfigs"""
         cls._wrapper=config.copy().pop(
         key="layer", default=None)
         cls._layer=config.copy()
@@ -52,12 +61,12 @@ class Node(object):
         :param nodes: nodes of node
         :return None
         """
-        """|Saves children of the current node|"""
+        """Saves children of the current node"""
         self.children=([self._add_child(child)
         for child in children]
         if children else None)
 
-        """|Saves parameters of node|"""
+        """Saves parameters of node"""
         self._instances=instances
         self._config=config
         self._level=level
@@ -82,8 +91,8 @@ class Node(object):
         Builds layer in node
         :return built layer
         """
-        return Builder(self._config,
-        self._instances)
+        return Layer(config=self._config,
+        instances=self._instances)
     def __del__(self)->None:
         """
         Deletes node from graph
