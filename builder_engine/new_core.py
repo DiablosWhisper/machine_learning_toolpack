@@ -1,7 +1,7 @@
 from typing import Dict, List, TypeVar
 
+Component=TypeVar("Component")
 Instance=TypeVar("Instance")
-Layer=TypeVar("Layer")
 Node=TypeVar("Node")
 
 class NetworkCore(object):
@@ -18,8 +18,8 @@ class NetworkCore(object):
         """
         """
         return None
-class Layer(object):
-    def _wrap(self, layer: Layer)->Instance:
+class Component(object):
+    def _wrap(self, component: Component)->Instance:
         """
         Wraps layer using its configuration
         :param layer: 
@@ -27,31 +27,32 @@ class Layer(object):
         """
         type=self._wrapper.pop(key="type")
         return self._instances[type](
-        layer=layer, **self._wrapper)
+        layer=component, **self._wrapper)
+    def _component(self)->Instance:
+        """
+        Builds component using its configuration
+        :return built component
+        """
+        type=self._component.pop(key="type")
+        return self._instances[type](
+        **self._component)
     def __new__(cls, config: Dict, 
     instances: Dict)->Instance:
         """
-        Stores layer configuration
-        :param config: configuration of layer
-        :param instances: layers instances
-        :return built layer
+        Stores component configuration
+        :param config: configuration of component
+        :param instances: component instances
+        :return built component
         """
         """Divides config into subconfigs"""
         cls._wrapper=config.copy().pop(
-        key="layer", default=None)
-        cls._layer=config.copy()
+        key=cls.__name__.lower(), 
+        default=None)
+        cls._component=config.copy()
         cls._instances=instances
 
-        if not cls._wrapper: return cls._layer()
-        else: return cls._wrap(cls._layer())
-    def _layer(self)->Instance:
-        """
-        Builds layer using its configuration
-        :return built layer
-        """
-        type=self._layer.pop(key="type")
-        return self._instances[type](
-        **self._layer)
+        if not cls._wrapper: return cls._component()
+        else: return cls._wrap(cls._component())
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
@@ -91,7 +92,7 @@ class Node(object):
         Builds layer in node
         :return built layer
         """
-        return Layer(config=self._config,
+        return Component(config=self._config,
         instances=self._instances)
     def __del__(self)->None:
         """
