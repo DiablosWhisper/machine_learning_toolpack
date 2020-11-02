@@ -57,8 +57,8 @@ class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
         """
-        Stores layer configuration in node
-        :param config: configuration of layer
+        Stores component configuration in node
+        :param config: configuration of component
         :param nodes: nodes of node
         :return None
         """
@@ -89,8 +89,8 @@ class Node(object):
         self.children.append(child)
     def build(self)->Instance:
         """
-        Builds layer in node
-        :return built layer
+        Builds component in node
+        :return built component
         """
         return Component(config=self._config,
         instances=self._instances)
