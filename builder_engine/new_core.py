@@ -27,7 +27,7 @@ class Component(object):
         """
         type=self._wrapper.pop(key="type")
         return self._instances[type](
-        layer=component, **self._wrapper)
+        component, **self._wrapper)
     def _component(self)->Instance:
         """
         Builds component using its configuration
@@ -45,9 +45,9 @@ class Component(object):
         :return built component
         """
         """Divides config into subconfigs"""
+        cls._cls_name=cls.__name__.lower()
         cls._wrapper=config.copy().pop(
-        key=cls.__name__.lower(), 
-        default=None)
+        key=cls._cls_name,default=None)
         cls._component=config.copy()
         cls._instances=instances
 
