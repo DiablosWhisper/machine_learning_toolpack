@@ -45,9 +45,9 @@ class Component(object):
         :return built component
         """
         """Divides config into subconfigs"""
-        cls._cls_name=cls.__name__.lower()
+        class_type=cls.__name__.lower()
         cls._wrapper=config.copy().pop(
-        key=cls._cls_name,default=None)
+        key=class_type, default=None)
         cls._component=config.copy()
         cls._instances=instances
 
