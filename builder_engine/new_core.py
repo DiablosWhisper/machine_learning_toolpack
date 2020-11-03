@@ -19,6 +19,7 @@ class NetworkCore(object):
         """
         """
         return None
+
 class Component(object):
     def _wrap(self, component: Component)->Instance:
         """
@@ -55,6 +56,7 @@ class Component(object):
 
         if not cls._wrapper: return cls._component()
         else: return cls._wrap(cls._component())
+
 class Node(object):
     def __init__(self, config: Dict, instances: Dict,
     level: int, children: List[Node]=None)->None:
