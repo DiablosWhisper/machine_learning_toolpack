@@ -13,6 +13,7 @@ class NetworkCore(object):
         """
         """
         return None
+    
     def __init__(self, network: Dict, 
     backend: str)->None:
         """
@@ -36,6 +37,7 @@ class Component(object):
         type=self._component.pop(key="type")
         return self._instances[type](
         **self._component)
+
     def __new__(cls, config: Dict, 
     instances: Dict)->Instance:
         """
@@ -71,29 +73,22 @@ class Node(object):
         self._instances=instances
         self._config=config
         self._level=level
-    def _del_child(self, child: Node)->None:
+    def __ne__(self, other: Node)->bool:
         """
-        Deletes child from children
-        :param child: node to delete
-        :return None
+        Compares two nodes
+        :param other: node to compare
+        :return equivalence of nodes
         """
-        assert isinstance(child, self)
-        self.children.remove(child)
-    def _add_child(self, child: Node)->None:
+        assert isinstance(other, Node)
+        return not (self._config is other._config)
+    def __eq__(self, other: Node)->bool:
         """
-        Adds child to children
-        :param child: node to add
-        :return None
+        Compares two nodes
+        :param other: node to compare
+        :return equivalence of nodes
         """
-        assert isinstance(child, self)
-        self.children.append(child)
-    def build(self)->Instance:
-        """
-        Builds component in node
-        :return built component
-        """
-        return Component(config=self._config,
-        instances=self._instances)
+        assert isinstance(other, Node)
+        return (self._config is other._config)
     def __del__(self)->None:
         """
         Deletes node from graph
@@ -102,3 +97,27 @@ class Node(object):
         ([child._del_child(self)
         for child in self.children] 
         if self.children else None)
+    
+    def _del_child(self, child: Node)->None:
+        """
+        Deletes child from children
+        :param child: node to delete
+        :return None
+        """
+        assert isinstance(child, Node)
+        self.children.remove(child)
+    def _add_child(self, child: Node)->None:
+        """
+        Adds child to children
+        :param child: node to add
+        :return None
+        """
+        assert isinstance(child, Node)
+        self.children.append(child)
+    def build(self)->Instance:
+        """
+        Builds component in node
+        :return built component
+        """
+        return Component(config=self._config,
+        instances=self._instances)
