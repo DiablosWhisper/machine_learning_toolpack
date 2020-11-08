@@ -2,9 +2,14 @@ from typing import Dict, List, TypeVar
 
 Component=TypeVar("Component")
 Instance=TypeVar("Instance")
-Vertex=TypeVar("Vertex")
+Node=TypeVar("Node")
 
 class NetworkCore(object):
+    def __init__(self, network: Dict)->None:
+        """
+        """
+        return None
+
     def compile(self, compile: Dict)->Dict:
         """
         """
@@ -13,13 +18,22 @@ class NetworkCore(object):
         """
         """
         return None
-    
-    def __init__(self, network: Dict, 
-    backend: str)->None:
+    def _traverse(self, branch: List[Dict], 
+    root: Node)->None:
         """
+        for vertex in branch:
+            if "layers" in vertex:
+                [traverse(branch, Vertex(vertex
+                level, instances))
+                for branch in vertex["layers"]]
+            else:
+                root.append(Vertex(vertex, 
+                level, instances))
+                root=vertex
+            return None
         """
-        return None
-
+        return
+      
 class Component(object):
     def _wrap(self, component: Component)->Instance:
         """
@@ -57,35 +71,38 @@ class Component(object):
         if not cls._wrapper: return cls._component()
         else: return cls._wrap(cls._component())
 
-class Vertex(object):
+class Node(object):
     def __init__(self, config: Dict, level: int,
     instances: Dict)->None:
         """
         Stores component configuration in node
+        :param instances: instances of components
         :param config: configuration of component
-        :param nodes: nodes of node
+        :param level: level of tree
         :return None
         """
         self._instances=instances
         self._config=config
         self._level=level
         self.children=[]
-    def __ne__(self, other: Vertex)->bool:
+    def __ne__(self, other: Node)->bool:
         """
         Compares two nodes
         :param other: node to compare
         :return equivalence of nodes
         """
-        assert isinstance(other, Vertex)
-        return not (self._config is other._config)
-    def __eq__(self, other: Vertex)->bool:
+        assert isinstance(other, Node)
+        return (not (self._config 
+        is other._config))
+    def __eq__(self, other: Node)->bool:
         """
         Compares two nodes
         :param other: node to compare
         :return equivalence of nodes
         """
-        assert isinstance(other, Vertex)
-        return (self._config is other._config)
+        assert isinstance(other, Node)
+        return (self._config 
+        is other._config)
     def __del__(self)->None:
         """
         Deletes node from graph
@@ -95,26 +112,26 @@ class Vertex(object):
         for child in self.children] 
         if self.children else None)
     
-    def remove(self, child: Vertex)->None:
+    def remove(self, child: Node)->None:
         """
         Deletes child from children
         :param child: node to delete
         :return None
         """
-        assert isinstance(child, Vertex)
+        assert isinstance(child, Node)
         self.children.remove(child)
-    def append(self, child: Vertex)->None:
+    def append(self, child: Node)->None:
         """
         Adds child to children
         :param child: node to add
         :return None
         """
-        assert isinstance(child, Vertex)
+        assert isinstance(child, Node)
         self.children.append(child)
     def build(self)->Instance:
         """
         Builds component in node
         :return built component
         """
-        return Component(config=self._config,
-        instances=self._instances)
+        return Component(self._config,
+        self._instances)
